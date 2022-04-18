@@ -17,7 +17,7 @@ class ViewUtils{
   static showSnack(
     BuildContext context, {
     required String title,
-    Color color = AppColors.errorBg,
+   // Color color = AppColors.errorBg,
     bool isFloating = false,
     int sec = 3,
   }) async {
@@ -34,7 +34,7 @@ class ViewUtils{
                 topRight: Radius.circular(20),
               ),
       ),
-      backgroundColor: color,
+     // backgroundColor: color,
     );
 
     ScaffoldMessenger.of(context).removeCurrentSnackBar();

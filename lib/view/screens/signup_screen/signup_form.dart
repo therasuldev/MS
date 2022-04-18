@@ -81,7 +81,6 @@ class _SignUpFormState extends MSState<SignUpForm> {
                     children: [
                       _notes(ms.fmt(context, 'note.1')),
                       _notes(ms.fmt(context, 'note.2')),
-                      _notes(ms.fmt(context, 'note.3'))
                     ],
                   ),
                   softWrap: true,

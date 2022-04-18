@@ -11,6 +11,7 @@ import '../widgets/widget.dart';
 
 class ScreenPage extends MSStatefulWidget {
   ScreenPage({Key? key}) : super(key: key);
+  static page() => MaterialPage(child:ScreenPage());
 
   @override
   _ScreenPageState createState() => _ScreenPageState();
@@ -48,7 +49,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: LoginPage(userRepository:userRepository),
+                route: LoginPage(userRepository: userRepository),
                 back: true,
               ),
               title: Text(
@@ -63,7 +64,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: SignUpPage(userRepository:userRepository),
+                route: SignUpPage(userRepository: userRepository),
                 back: true,
               ),
               title: Text(

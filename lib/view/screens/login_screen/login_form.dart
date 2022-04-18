@@ -22,10 +22,12 @@ class _LoginFormState extends MSState<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   LoginBloc? _loginBloc;
+  AuthBloc? _authBloc;
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _loginBloc?.close();
     super.dispose();
   }
 
@@ -41,6 +43,7 @@ class _LoginFormState extends MSState<LoginForm> {
   void initState() {
     super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
     _emailController.addListener(_onEmailChange);
     _passwordController.addListener(_onPasswordChange);
   }
@@ -60,11 +63,10 @@ class _LoginFormState extends MSState<LoginForm> {
                 position: FlushbarPosition.BOTTOM,
               );
             }
-            if (state.isSubmitting!) {
-              SpinKitCircle(color: spinkitColor);
-            }
+
             if (state.isSuccess!) {
-              BlocProvider.of<AuthBloc>(context).add(AuthLoggedIn());
+              _authBloc?.add(AuthLoggedIn());
+              Navigator.pop(context);
             }
           },
           child: SingleChildScrollView(
@@ -212,11 +214,11 @@ class _KLoginFormState extends MSState<KLoginForm> {
           AnimePressButton(
             borderRadius: BorderRadius.circular(100),
             onTap: () async {
-              BlocProvider.of<LoginBloc>(context).add(
-                LoginWithCredentialsPressed(
-                    email: widget.emailController.text.trim(),
-                    password: widget.passwordController.text.trim()),
-              );
+              context.read<LoginBloc>().add(
+                    LoginWithCredentialsPressed(
+                        email: widget.emailController.text.trim(),
+                        password: widget.passwordController.text.trim()),
+                  );
             },
             title: BlocBuilder<LoginBloc, LoginState>(
               builder: (context, state) {

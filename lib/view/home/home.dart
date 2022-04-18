@@ -6,17 +6,14 @@ import 'package:ms/core/auth/app_bloc/app_bloc.dart';
 import 'package:ms/core/auth/app_bloc/app_event.dart';
 import 'package:ms/core/auth/login_bloc/login_bloc.dart';
 import 'package:ms/core/auth/login_bloc/login_state.dart';
-import 'package:ms/core/repositories/user_repository.dart';
 import 'package:ms/view/widgets/widget.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 import '../../mystore.dart';
 
 class HomePage extends MSStatefulWidget {
-  HomePage({required this.userRepository, required this.user, Key? key})
-      : super(key: key);
+  HomePage({required this.user, Key? key}) : super(key: key);
 
-  final UserRepository userRepository;
   final User? user;
 
   @override
@@ -30,7 +27,8 @@ class _HomePageState extends MSState<HomePage> {
   @override
   void initState() {
     pageController = PageController(initialPage: selectedIndex);
-   // user = widget.user!;
+    //pageController.animateToPage(selectedIndex, duration: duration, curve: curve)
+    // user = widget.user!;
     super.initState();
   }
 
@@ -94,16 +92,14 @@ class _HomePageState extends MSState<HomePage> {
 
   PopupMenuItem<int> _popupMenuButton(BuildContext context) {
     return PopupMenuItem(
-      child: BlocProvider(
-        create: (_) => LoginBloc(userRepository: widget.userRepository),
-        child: BlocListener<LoginBloc, LoginState>(
-          listener: (context, state) async {},
-          child: TextButton(
-            child: const Text('Exit'),
-            onPressed: () {
-              context.read<AuthBloc>().add(AuthLoggedOut());
-            },
-          ),
+      child: BlocListener<LoginBloc, LoginState>(
+        listener: (context, state) async {},
+        child: TextButton(
+          child: const Text('Exit'),
+          onPressed: () {
+            context.read<AuthBloc>().add(AuthLoggedOut());
+            Navigator.pop(context);
+          },
         ),
       ),
       value: 3,
