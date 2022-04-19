@@ -1,4 +1,3 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ms/core/auth/app_bloc/app_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:ms/core/auth/app_bloc/app_event.dart';
 import 'package:ms/core/auth/login_bloc/login_bloc.dart';
 import 'package:ms/core/auth/login_bloc/login_event.dart';
 import 'package:ms/core/auth/login_bloc/login_state.dart';
+import 'package:ms/view/widgets/utils.dart';
 import '../../../mystore.dart';
 import '../../ui/animation_button.dart';
 import '../../widgets/widget.dart';
@@ -23,13 +23,6 @@ class _LoginFormState extends MSState<LoginForm> {
   final _passwordController = TextEditingController();
   LoginBloc? _loginBloc;
   AuthBloc? _authBloc;
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _loginBloc?.close();
-    super.dispose();
-  }
 
   void _onEmailChange() {
     _loginBloc?.add(LoginEmailChange(email: _emailController.text));
@@ -42,10 +35,19 @@ class _LoginFormState extends MSState<LoginForm> {
   @override
   void initState() {
     super.initState();
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _authBloc = BlocProvider.of<AuthBloc>(context);
     _emailController.addListener(_onEmailChange);
     _passwordController.addListener(_onPasswordChange);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _authBloc!.close();
+    _loginBloc!.close();
+    super.dispose();
   }
 
   @override
@@ -55,25 +57,31 @@ class _LoginFormState extends MSState<LoginForm> {
         body: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) async {
             if (state.isFailure!) {
-              fsnack(
-                context: context,
-                title: ms.fmt(context, 'snackbar.title-error'),
-                error: ms.fmt(context, 'error.${state.error!.code}'),
-                snackcolor: snackErrorColor,
-                position: FlushbarPosition.BOTTOM,
+              ViewUtils.showSnack(
+                context,
+                color: snackErrorColor,
+                title: ms.fmt(context, 'error.${state.error!.code}'),
               );
-            }
-
-            if (state.isSuccess!) {
+            } else if (state.isSuccess!) {
               _authBloc?.add(AuthLoggedIn());
-              Navigator.pop(context);
             }
           },
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 40),
-                _LoginTitle(),
+                const SizedBox(height: 30),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: size(context).width * .05),
+                      child: Text(
+                        ms.fmt(context, 'auth.signIn'),
+                        style: TextStyle(color: darkBlueColor, fontSize: 45),
+                      ),
+                    ),
+                    Expanded(child: Container())
+                  ],
+                ),
                 const SizedBox(height: 20),
                 KLoginForm(
                   emailController: _emailController,
@@ -84,29 +92,6 @@ class _LoginFormState extends MSState<LoginForm> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _LoginTitle extends MSStatelessWidget {
-  _LoginTitle({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: size(context).width * .05),
-          child: Text(
-            ms.fmt(context, 'auth.signIn'),
-            style: Theme.of(context)
-                .textTheme
-                .headline3!
-                .copyWith(color: darkBlueColor),
-          ),
-        ),
-        Expanded(child: Container())
-      ],
     );
   }
 }
@@ -125,44 +110,24 @@ class KLoginForm extends MSStatefulWidget {
 }
 
 class _KLoginFormState extends MSState<KLoginForm> {
-  bool isSecure = true;
-
-  void onTap() => setState(() => isSecure = !isSecure);
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Container(
             width: size(context).width * .9,
             height: 50,
             padding: const EdgeInsets.only(left: 7),
             margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 222, 237, 245),
-              borderRadius: BorderRadius.circular(15),
-            ),
+            decoration: ViewUtils.formDecoration(),
             child: TextFormField(
               textInputAction: TextInputAction.next,
               controller: widget.emailController,
-              decoration: InputDecoration(
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  suffixIcon: GestureDetector(
-                      onTap: () {
-                        fsnack(
-                          context: context,
-                          error: ms.fmt(context, 'snackbar.text-info'),
-                          title: ms.fmt(context, 'snackbar.title-note'),
-                          snackcolor: darkBlueColor,
-                          position: FlushbarPosition.TOP,
-                        );
-                      },
-                      child: Icon(Icons.info, color: greyAccent)),
-                  hintText: ms.fmt(context, 'account.email'),
-                  hintStyle: TextStyle(color: greyAccent)),
+              decoration: ViewUtils.nonBorderDecoration(
+                hint: ms.fmt(context, 'account.email'),
+              ),
               style: TextStyle(color: blackAccent),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -172,43 +137,26 @@ class _KLoginFormState extends MSState<KLoginForm> {
             height: 50,
             padding: const EdgeInsets.only(left: 7),
             margin: const EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 222, 237, 245),
-              borderRadius: BorderRadius.circular(15),
-            ),
+            decoration: ViewUtils.formDecoration(),
             child: TextFormField(
               controller: widget.passwordController,
-              decoration: InputDecoration(
-                hintText: ms.fmt(context, 'account.password'),
-                hintStyle: TextStyle(color: greyAccent),
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                suffixIcon: IconButton(
-                    onPressed: onTap,
-                    icon: isSecure
-                        ? Icon(Icons.visibility_off, color: greyAccent)
-                        : Icon(Icons.visibility, color: greyAccent)),
-              ),
+              decoration: ViewUtils.nonBorderDecoration(
+                  hint: ms.fmt(context, 'account.password')),
               style: TextStyle(color: blackAccent),
               keyboardType: TextInputType.text,
-              obscureText: isSecure,
+              obscureText: true,
             ),
           ),
-          Align(
-            child: TextButton(
-              child: Text(
-                ms.fmt(context, 'auth.forgotPassword'),
-                style: TextStyle(color: darkBlueColor, fontSize: 15),
-              ),
-              onPressed: () => pageRoute(
-                route: ForgotPasswordPage(),
-                context: context,
-                back: true,
-              ),
+          TextButton(
+            child: Text(
+              ms.fmt(context, 'auth.forgotPassword'),
+              style: TextStyle(color: darkBlueColor, fontSize: 15),
             ),
-            heightFactor: 1,
-            alignment: Alignment(size(context).width * .002, 0),
+            onPressed: () => pageRoute(
+              route: ForgotPasswordPage(),
+              context: context,
+              back: true,
+            ),
           ),
           const SizedBox(height: 30),
           AnimePressButton(

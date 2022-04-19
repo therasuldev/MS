@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ms/core/auth/login_bloc/login_event.dart';
 import 'package:ms/core/auth/login_bloc/login_state.dart';
 import 'package:ms/core/models/error.dart';
-import 'package:ms/core/repositories/user_repository.dart';
+import 'package:ms/core/service/user_service.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final UserRepository _userRepository;
+  final UserService _userService;
 
-  LoginBloc({required UserRepository userRepository})
-      : _userRepository = userRepository,
+  LoginBloc({required UserService userService})
+      : _userService = userService,
         super(LoginState.initial());
 
   @override
@@ -37,7 +37,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       {required String email, required String password}) async* {
     yield LoginState.loading();
     try {
-      await _userRepository.signInWithCredentials(email, password);
+      await _userService.signInWithCredentials(email, password);
       yield LoginState.success();
     } on FirebaseAuthException catch (err) {
       yield LoginState.failure(error: ErrorModel.fromException(err)!);

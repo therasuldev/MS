@@ -6,8 +6,12 @@ class RegisterState {
   final bool? isFailure;
   final ErrorModel? error;
 
-  RegisterState(
-      {this.error, this.isSubmitting, this.isSuccess, this.isFailure});
+  RegisterState({
+    this.error,
+    this.isSubmitting,
+    this.isSuccess,
+    this.isFailure,
+  });
 
   factory RegisterState.initial() {
     return RegisterState(

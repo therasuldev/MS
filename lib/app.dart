@@ -5,20 +5,23 @@ import 'package:ms/core/auth/app_bloc/app_bloc.dart';
 import 'package:ms/core/auth/app_bloc/app_event.dart';
 import 'package:ms/core/auth/app_bloc/app_state.dart';
 import 'package:ms/core/auth/login_bloc/login_bloc.dart';
+import 'package:ms/core/auth/signup_bloc/signup_bloc.dart';
+import 'package:ms/core/service/user_service.dart';
 import 'package:ms/view/home/home.dart';
 import 'package:ms/view/start/splash.dart';
 
 import 'core/app/intl.dart';
-import 'core/repositories/user_repository.dart';
 import 'mystore.dart';
 import 'view/widgets/widget.dart';
 
 class MyApp extends MSStatelessWidget {
-  MyApp({Key? key, required UserRepository userRepository})
-      : _userRepository = userRepository,
+  MyApp({Key? key, required UserService userService})
+      : _userService = userService,
         super(key: key);
 
-  final UserRepository _userRepository;
+  final UserService _userService;
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  NavigatorState? get _navigator => _navigatorKey.currentState;
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +29,8 @@ class MyApp extends MSStatelessWidget {
       providers: [
         BlocProvider(
           create: (_) =>
-              AuthBloc(userRepository: _userRepository)..add(AuthStarted()),
+              AuthBloc(userService: _userService)..add(AuthStarted()),
         ),
-        BlocProvider(
-            create: (context) => LoginBloc(userRepository: _userRepository))
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -37,16 +38,23 @@ class MyApp extends MSStatelessWidget {
               FloatingActionButtonThemeData(backgroundColor: kBackgroundColor),
           appBarTheme: AppBarTheme(backgroundColor: kBackgroundColor),
         ),
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
+        navigatorKey: _navigatorKey,
+        builder: (context, child) => BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
             if (state is AuthFailure) {
-              return ScreenPage();
+              _navigator!.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => ScreenPage()),
+                  (route) => false);
             } else if (state is AuthSuccess) {
-              return HomePage(user: state.user);
+              _navigator!.pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(user: state.user)),
+                  (route) => false);
             }
-            return SpinKitCircle(color: spinkitColor);
           },
+          child: child,
         ),
+        onGenerateRoute: (_) => MaterialPageRoute(builder: (_) => ScreenPage()),
         localizationsDelegates: [
           ms.intl.delegate,
           GlobalMaterialLocalizations.delegate,

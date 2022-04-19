@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:ms/core/repositories/user_repository.dart';
+import 'package:ms/core/service/user_service.dart';
 
 import 'package:ms/view/screens/login_screen/login_page.dart';
 import 'package:ms/view/screens/signup_screen/signup_page.dart';
@@ -18,7 +18,7 @@ class ScreenPage extends MSStatefulWidget {
 }
 
 class _ScreenPageState extends MSState<ScreenPage> {
-  final userRepository = UserRepository();
+  final userService = UserService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +49,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: LoginPage(userRepository: userRepository),
+                route: LoginPage(userService: userService),
                 back: true,
               ),
               title: Text(
@@ -64,7 +64,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: SignUpPage(userRepository: userRepository),
+                route: SignUpPage(userService: userService),
                 back: true,
               ),
               title: Text(

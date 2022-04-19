@@ -6,6 +6,8 @@ import 'package:ms/core/auth/app_bloc/app_bloc.dart';
 import 'package:ms/core/auth/app_bloc/app_event.dart';
 import 'package:ms/core/auth/login_bloc/login_bloc.dart';
 import 'package:ms/core/auth/login_bloc/login_state.dart';
+import 'package:ms/view/home/components/home.dart';
+import 'package:ms/view/home/components/person.dart';
 import 'package:ms/view/widgets/widget.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
@@ -21,14 +23,12 @@ class HomePage extends MSStatefulWidget {
 }
 
 class _HomePageState extends MSState<HomePage> {
-  //User? user;
   var selectedIndex = 0;
   late PageController pageController;
   @override
   void initState() {
     pageController = PageController(initialPage: selectedIndex);
     //pageController.animateToPage(selectedIndex, duration: duration, curve: curve)
-    // user = widget.user!;
     super.initState();
   }
 
@@ -40,37 +40,13 @@ class _HomePageState extends MSState<HomePage> {
         title: const Text('Onlayn Magaza'),
         systemOverlayStyle: SystemUiOverlayStyle.light,
         elevation: 0,
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem(child: Text('item1'), value: 1),
-              const PopupMenuItem(child: Text('item2'), value: 2),
-              _popupMenuButton(context)
-            ],
-          )
-        ],
+        actions: [],
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
-        children: <Widget>[
-          Container(
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.bookmark_rounded,
-              size: 56,
-              color: Colors.amber[400],
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.favorite_rounded,
-              size: 56,
-              color: Colors.red[400],
-            ),
-          ),
-        ],
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[Home(), Person()],
       ),
       drawer: Drawer(
         child: ListView(
@@ -87,22 +63,6 @@ class _HomePageState extends MSState<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _floatingActionButton(),
       bottomNavigationBar: _bottomNavigationBar(),
-    );
-  }
-
-  PopupMenuItem<int> _popupMenuButton(BuildContext context) {
-    return PopupMenuItem(
-      child: BlocListener<LoginBloc, LoginState>(
-        listener: (context, state) async {},
-        child: TextButton(
-          child: const Text('Exit'),
-          onPressed: () {
-            context.read<AuthBloc>().add(AuthLoggedOut());
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      value: 3,
     );
   }
 

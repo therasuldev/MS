@@ -1,15 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:ms/core/auth/app_bloc/app_event.dart';
 import 'package:ms/core/auth/app_bloc/app_state.dart';
-import 'package:ms/core/repositories/user_repository.dart';
+import 'package:ms/core/service/user_service.dart';
 
 
 class AuthBloc
     extends Bloc<AuthEvent, AuthState> {
-  final UserRepository _userRepository;
+  final UserService _userService;
 
-  AuthBloc({required UserRepository userRepository})
-      : _userRepository = userRepository,
+  AuthBloc({required UserService userService})
+      : _userService = userService,
         super(AuthInitial());
 
   @override
@@ -27,19 +27,19 @@ class AuthBloc
   //AuthenticationLoggedOut
   Stream<AuthState> _mapAuthenticationLoggedOutInToState() async* {
     yield AuthFailure();
-    _userRepository.signOut();
+    _userService.signOut();
   }
 
   //AuthenticationLoggedIn
   Stream<AuthState> _mapAuthenticationLoggedInToState() async* {
-    yield AuthSuccess(await _userRepository.getUser());
+    yield AuthSuccess(await _userService.getUser());
   }
 
   // AuthenticationStarted
   Stream<AuthState> _mapAuthenticationStartedToState() async* {
-    final isSignedIn = await _userRepository.isSignedIn();
+    final isSignedIn = await _userService.isSignedIn();
     if (isSignedIn) {
-      final user = await _userRepository.getUser();
+      final user = await _userService.getUser();
       yield AuthSuccess(user);
     } else {
       yield AuthFailure();

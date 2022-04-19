@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:ms/core/service/user_service.dart';
 import 'app.dart';
 import 'core/app/intl.dart';
 import 'core/app/ms.dart';
-import 'core/repositories/user_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +14,6 @@ Future<void> main() async {
   ms.intl.locale = const Locale('az');
   ms.intl.supportedLocales = languages;
 
-  final userRepository = UserRepository();
-  runApp(MyApp(userRepository: userRepository));
+  final userService = UserService();
+  runApp(MyApp(userService: userService));
 }

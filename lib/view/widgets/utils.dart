@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ms/constant/constant.dart';
 
-class ViewUtils{
+class ViewUtils {
   static nonBorderDecoration({String? hint}) {
     return InputDecoration(
       hintText: hint,
@@ -10,6 +11,14 @@ class ViewUtils{
       errorBorder: InputBorder.none,
       disabledBorder: InputBorder.none,
       focusedErrorBorder: InputBorder.none,
+      hintStyle: TextStyle(color: greyAccent),
+    );
+  }
+
+  static formDecoration() {
+    return BoxDecoration(
+      color: const Color.fromARGB(255, 222, 237, 245),
+      borderRadius: BorderRadius.circular(15),
     );
   }
 
@@ -17,9 +26,9 @@ class ViewUtils{
   static showSnack(
     BuildContext context, {
     required String title,
-   // Color color = AppColors.errorBg,
     bool isFloating = false,
-    int sec = 3,
+    required Color color,
+    int sec = 4,
   }) async {
     final snack = SnackBar(
       content: Text(title, style: const TextStyle(color: Colors.white)),
@@ -34,7 +43,7 @@ class ViewUtils{
                 topRight: Radius.circular(20),
               ),
       ),
-     // backgroundColor: color,
+      backgroundColor: color,
     );
 
     ScaffoldMessenger.of(context).removeCurrentSnackBar();

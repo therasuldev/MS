@@ -1,4 +1,3 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ms/core/auth/app_bloc/app_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:ms/core/auth/app_bloc/app_event.dart';
 import 'package:ms/core/auth/signup_bloc/signup_bloc.dart';
 import 'package:ms/core/auth/signup_bloc/signup_event.dart';
 import 'package:ms/core/auth/signup_bloc/signup_state.dart';
+import 'package:ms/view/widgets/utils.dart';
 import '../../../mystore.dart';
 import '../../ui/animation_button.dart';
 import '../../widgets/widget.dart';
@@ -22,14 +22,7 @@ class _SignUpFormState extends MSState<SignUpForm> {
   final _passwordController = TextEditingController();
 
   RegisterBloc? _registerBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _registerBloc = BlocProvider.of<RegisterBloc>(context);
-    _emailController.addListener(_onEmailChange);
-    _passwordController.addListener(_onPasswordChange);
-  }
+  AuthBloc? _authBloc;
 
   void _onEmailChange() {
     _registerBloc!.add(RegisterEmailChanged(email: _emailController.text));
@@ -41,6 +34,24 @@ class _SignUpFormState extends MSState<SignUpForm> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onEmailChange);
+    _passwordController.addListener(_onPasswordChange);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _registerBloc = BlocProvider.of<RegisterBloc>(context);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _authBloc!.close();
+    _registerBloc!.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -48,73 +59,42 @@ class _SignUpFormState extends MSState<SignUpForm> {
         body: BlocListener<RegisterBloc, RegisterState>(
           listener: (context, state) {
             if (state.isFailure!) {
-              fsnack(
-                context: context,
-                title: ms.fmt(context, 'snackbar.title-error'),
-                error: ms.fmt(context, 'error.${state.error!.code}'),
-                snackcolor: snackErrorColor,
-                position: FlushbarPosition.BOTTOM,
+              ViewUtils.showSnack(
+                context,
+                title: ms.fmt(context, 'error.${state.error!.code}'),
+                color: snackErrorColor,
               );
             }
-            if (state.isSubmitting!) {
-              SpinKitCircle(color: spinkitColor);
-            }
             if (state.isSuccess!) {
-              BlocProvider.of<AuthBloc>(context).add(AuthLoggedIn());
+              _authBloc?.add(AuthLoggedIn());
             }
           },
           child: SingleChildScrollView(
             child: Column(
               children: [
                 const SizedBox(height: 30),
-                _signUpTitle(context),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: size(context).width * .05),
+                      child: Text(
+                        ms.fmt(context, 'auth.signUp'),
+                        style: TextStyle(color: darkBlueColor, fontSize: 33),
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                  ],
+                ),
                 const SizedBox(height: 20),
                 KRegisterForm(
                   emailController: _emailController,
                   passwordController: _passwordController,
-                ),
-                const SizedBox(height: 40),
-                RichText(
-                  text: TextSpan(
-                    text: ms.fmt(context, 'note'),
-                    style: TextStyle(color: blackAccent),
-                    children: [
-                      _notes(ms.fmt(context, 'note.1')),
-                      _notes(ms.fmt(context, 'note.2')),
-                    ],
-                  ),
-                  softWrap: true,
-                  textScaleFactor: 1.1,
                 ),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  TextSpan _notes(String _text) {
-    return TextSpan(
-        text: ms.fmt(context, _text),
-        style: TextStyle(height: 2, color: blackAccent));
-  }
-
-  Widget _signUpTitle(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: size(context).width * .05),
-          child: Text(
-            ms.fmt(context, 'auth.signUp'),
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1!
-                .copyWith(color: darkBlueColor, fontSize: 33),
-          ),
-        ),
-        Expanded(child: Container()),
-      ],
     );
   }
 }
@@ -144,19 +124,12 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
               height: 50,
               padding: const EdgeInsets.only(left: 7),
               margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 222, 237, 245),
-                borderRadius: BorderRadius.circular(15),
-              ),
+              decoration: ViewUtils.formDecoration(),
               child: TextFormField(
                 textInputAction: TextInputAction.next,
                 controller: widget.emailController,
-                decoration: InputDecoration(
-                  hintText: ms.fmt(context, 'account.email'),
-                  hintStyle: TextStyle(color: greyAccent),
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
+                decoration: ViewUtils.nonBorderDecoration(
+                  hint: ms.fmt(context, 'account.email'),
                 ),
                 style: TextStyle(color: blackAccent),
                 keyboardType: TextInputType.emailAddress,
@@ -167,18 +140,11 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
               height: 50,
               padding: const EdgeInsets.only(left: 7),
               margin: const EdgeInsets.only(top: 10),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 222, 237, 245),
-                borderRadius: BorderRadius.circular(15),
-              ),
+              decoration: ViewUtils.formDecoration(),
               child: TextFormField(
                 controller: widget.passwordController,
-                decoration: InputDecoration(
-                  hintText: ms.fmt(context, 'account.password'),
-                  hintStyle: TextStyle(color: greyAccent),
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
+                decoration: ViewUtils.nonBorderDecoration(
+                  hint: ms.fmt(context, 'account.password'),
                 ),
                 style: TextStyle(color: blackAccent),
                 keyboardType: TextInputType.text,
@@ -188,11 +154,12 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
             AnimePressButton(
               borderRadius: BorderRadius.circular(100),
               onTap: () async {
-                BlocProvider.of<RegisterBloc>(context).add(
-                  RegisterSubmitted(
-                      email: widget.emailController.text.trim(),
-                      password: widget.passwordController.text.trim()),
-                );
+                context.read<RegisterBloc>().add(
+                      RegisterSubmitted(
+                        email: widget.emailController.text.trim(),
+                        password: widget.passwordController.text.trim(),
+                      ),
+                    );
               },
               title: BlocBuilder<RegisterBloc, RegisterState>(
                 builder: (context, state) {

@@ -2,13 +2,13 @@ import 'package:bloc/bloc.dart';
 import 'package:ms/core/auth/signup_bloc/signup_event.dart';
 import 'package:ms/core/auth/signup_bloc/signup_state.dart';
 import 'package:ms/core/models/error.dart';
-import 'package:ms/core/repositories/user_repository.dart';
+import 'package:ms/core/service/user_service.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  final UserRepository _userRepository;
+  final UserService _userService;
 
-  RegisterBloc({required UserRepository userRepository})
-      : _userRepository = userRepository,
+  RegisterBloc({required UserService userService})
+      : _userService = userService,
         super(RegisterState.initial());
 
   @override
@@ -37,7 +37,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       {required String email, required String password}) async* {
     yield RegisterState.loading();
     try {
-      await _userRepository.signUp(email: email, password: password);
+      await _userService.signUp(email: email, password: password);
       yield RegisterState.success();
     } catch (err) {
       yield RegisterState.failure(error: ErrorModel.fromException(err)!);
