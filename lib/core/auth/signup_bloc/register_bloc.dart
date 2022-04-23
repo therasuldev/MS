@@ -9,13 +9,14 @@ import 'package:ms/core/models/email.dart';
 import 'package:ms/core/models/error.dart';
 import 'package:ms/core/models/password.dart';
 
-part 'login_state.dart';
-part 'login_event.dart';
+part 'register_event.dart';
+part 'register_state.dart';
 
-class LoginBloc extends Bloc<LoginEvent, LoginState> {
+class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final AuthenticationRepository authenticationRepository;
-  LoginBloc({required this.authenticationRepository}) : super(const LoginState()) {
-    on<LoginEmailChange>((event, emit) {
+
+  RegisterBloc(this.authenticationRepository) : super(const RegisterState()) {
+    on<RegisterEmailChanged>((event, emit) {
       final email = Email.dirty(event.email);
       emit(
         state.copyWith(
@@ -24,7 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         ),
       );
     });
-    on<LoginPasswordChange>((event, emit) {
+    on<RegisterPasswordChanged>((event, emit) {
       final password = Password.dirty(event.password);
       emit(
         state.copyWith(
@@ -33,13 +34,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         ),
       );
     });
-    on<LoginSubmitted>((event, emit) {
+    on<RegisterSubmitted>((event, emit) {
       if (state.status.isValidated) {
         log("_onSubmitted status ${state.status}");
         emit(state.copyWith(status: FormzStatus.submissionInProgress));
         try {
-          authenticationRepository.logIn(
-              email: state.email.value, password: state.password.value);
+          // authenticationRepository.(
+          //     email: state.email.value, password: state.password.value);
           emit(state.copyWith(status: FormzStatus.submissionSuccess));
         } on FirebaseAuthException catch (err) {
           emit(

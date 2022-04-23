@@ -1,9 +1,10 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ms/core/service/user_service.dart';
 
-import 'package:ms/view/screens/login_screen/login_page.dart';
-import 'package:ms/view/screens/signup_screen/signup_page.dart';
+import 'package:ms/view/screens/login_screen/login_form.dart';
+import 'package:ms/view/screens/signup_screen/signup_form.dart';
 
 import '../../mystore.dart';
 import '../ui/animation_button.dart';
@@ -11,14 +12,15 @@ import '../widgets/widget.dart';
 
 class ScreenPage extends MSStatefulWidget {
   ScreenPage({Key? key}) : super(key: key);
-  static page() => MaterialPage(child:ScreenPage());
+  static page() => MaterialPage(child: ScreenPage());
 
   @override
   _ScreenPageState createState() => _ScreenPageState();
 }
 
 class _ScreenPageState extends MSState<ScreenPage> {
-  final userService = UserService();
+ // final authenticationRepository = AuthenticationRepository();
+  final style = TextStyle(color: spinkitColor, fontSize: 22);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,13 +51,10 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: LoginPage(userService: userService),
+                route: LoginForm(),
                 back: true,
               ),
-              title: Text(
-                ms.fmt(context, 'auth.signIn'),
-                style: TextStyle(color: spinkitColor, fontSize: 22),
-              ),
+              title: Text(ms.fmt(context, 'auth.signIn'), style: style),
               titleColor: spinkitColor,
               width: size(context).width * .9,
             ),
@@ -64,13 +63,10 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: SignUpPage(userService: userService),
+                route: SignUpForm(),
                 back: true,
               ),
-              title: Text(
-                ms.fmt(context, 'auth.signUp'),
-                style: TextStyle(color: spinkitColor, fontSize: 22),
-              ),
+              title: Text(ms.fmt(context, 'auth.signUp'), style: style),
               titleColor: spinkitColor,
               width: size(context).width * .9,
             ),

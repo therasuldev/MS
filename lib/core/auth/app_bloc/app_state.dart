@@ -1,22 +1,25 @@
-import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+part of 'app_bloc.dart';
 
-abstract class AuthState extends Equatable {
-  const AuthState();
+class AppState extends Equatable {
+  const AppState._({
+    this.status = AppStatus.unknown,
+    this.user = User.empty,
+  });
 
-  @override
-  List<Object> get props => [];
-}
+  const AppState.unknown() : this._();
 
-class AuthInitial extends AuthState {}
+  const AppState.authenticated(User user) : this._(
+    status: AppStatus.unauthenticated,
+    user: user
+  );
 
-class AuthSuccess extends AuthState {
+  const AppState.unauthenticated() : this._(
+    status: AppStatus.unauthenticated
+  );
+
+  final AppStatus status;
   final User? user;
 
-  const AuthSuccess(this.user);
-
   @override
-  List<Object> get props => [user!];
+  List<Object> get props => [status, user!];
 }
-
-class AuthFailure extends AuthState {}

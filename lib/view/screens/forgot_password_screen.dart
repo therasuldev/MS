@@ -1,8 +1,8 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
 import 'package:ms/core/auth/login_bloc/login_bloc.dart';
-import 'package:ms/core/auth/login_bloc/login_state.dart';
 import '../ui/animation_button.dart';
 import '../widgets/widget.dart';
 
@@ -24,7 +24,7 @@ class _ForgotPasswordPageState extends MSState<ForgotPasswordPage> {
         resizeToAvoidBottomInset: false,
         body: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
-            if (state.isFailure!) {
+            if (state.status==FormzStatus.submissionFailure) {
               fsnack(
                 context: context,
                 title: ms.fmt(context, 'snackbar.title-error'),
@@ -33,7 +33,7 @@ class _ForgotPasswordPageState extends MSState<ForgotPasswordPage> {
                 position: FlushbarPosition.BOTTOM,
               );
             }
-            if (state.isSuccess!) {
+            if (state.status==FormzStatus.submissionSuccess) {
               fsnack(
                 context: context,
                 title: ms.fmt(context, 'snackbar.title-success'),
@@ -82,7 +82,7 @@ class _ForgotPasswordPageState extends MSState<ForgotPasswordPage> {
       },
       title: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
-          if (state.isSubmitting!) {
+          if (state.status==FormzStatus.submissionInProgress) {
             return SpinKitCircle(color: spinkitColor);
           } else {
             return Text(
