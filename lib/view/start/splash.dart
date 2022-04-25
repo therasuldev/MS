@@ -1,10 +1,9 @@
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:ms/core/service/user_service.dart';
 
 import 'package:ms/view/screens/login_screen/login_form.dart';
-import 'package:ms/view/screens/signup_screen/signup_form.dart';
+import 'package:ms/view/screens/login_screen/login_page.dart';
+import 'package:ms/view/screens/register_screen/register_page.dart';
 
 import '../../mystore.dart';
 import '../ui/animation_button.dart';
@@ -12,14 +11,16 @@ import '../widgets/widget.dart';
 
 class ScreenPage extends MSStatefulWidget {
   ScreenPage({Key? key}) : super(key: key);
-  static page() => MaterialPage(child: ScreenPage());
+  static Route route() {
+    return MaterialPageRoute<void>(builder: (_) => ScreenPage());
+  }
 
   @override
   _ScreenPageState createState() => _ScreenPageState();
 }
 
 class _ScreenPageState extends MSState<ScreenPage> {
- // final authenticationRepository = AuthenticationRepository();
+  // final authenticationRepository = AuthenticationRepository();
   final style = TextStyle(color: spinkitColor, fontSize: 22);
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: LoginForm(),
+                route: const LoginPage(),
                 back: true,
               ),
               title: Text(ms.fmt(context, 'auth.signIn'), style: style),
@@ -63,7 +64,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: SignUpForm(),
+                route: const RegisterPage(),
                 back: true,
               ),
               title: Text(ms.fmt(context, 'auth.signUp'), style: style),

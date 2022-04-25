@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ms/core/auth/login_bloc/login_bloc.dart';
+import 'package:ms/core/auth/auth_bloc/auth_bloc.dart';
 import 'package:ms/view/widgets/widget.dart';
-import 'package:user_repository/user_repository.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 import '../../mystore.dart';
 
 class HomePage extends MSStatefulWidget {
-  HomePage({required this.user, Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
-  final User? user;
+  static Route route() {
+    return MaterialPageRoute<void>(builder: (_) => HomePage());
+  }
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -36,10 +37,6 @@ class _HomePageState extends MSState<HomePage> {
     super.dispose();
   }
 
-  // final pageView = PageView(
-  //   controller: pageController,
-  // );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,16 +45,20 @@ class _HomePageState extends MSState<HomePage> {
         title: const Text('Onlayn Magaza'),
         systemOverlayStyle: SystemUiOverlayStyle.light,
         elevation: 0,
-        actions: [],
+        actions: [
+          TextButton(
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              context
+                  .read<AuthenticationBloc>()
+                  .add(AuthenticationLogoutRequested());
+            },
+          ),
+        ],
       ),
-      body: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-        return ElevatedButton(
-          child: Text('exit'),
-          onPressed: () {
-           // context.read<AuthBloc>().add(AuthLoggedOut());
-          },
-        );
-      }),
       drawer: Drawer(
         child: ListView(
           children: const [

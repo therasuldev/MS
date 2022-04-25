@@ -1,51 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ms/core/auth/app_bloc/app_bloc.dart';
-import 'package:ms/core/auth/signup_bloc/register_bloc.dart';
+import 'package:ms/core/auth/register/register_bloc.dart';
 import 'package:ms/view/widgets/utils.dart';
 import '../../../mystore.dart';
 import '../../ui/animation_button.dart';
 import '../../widgets/widget.dart';
 import 'package:formz/formz.dart';
 
-class SignUpForm extends MSStatefulWidget {
-  SignUpForm({Key? key}) : super(key: key);
+class RegisterForm extends MSStatefulWidget {
+  RegisterForm({Key? key}) : super(key: key);
 
   @override
-  _SignUpFormState createState() => _SignUpFormState();
+  _RegisterFormState createState() => _RegisterFormState();
 }
 
-class _SignUpFormState extends MSState<SignUpForm> {
+class _RegisterFormState extends MSState<RegisterForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  RegisterBloc? _registerBloc;
-  AppBloc? _authBloc;
-
-  // void _onEmailChange() {
-  //   _registerBloc!.add(RegisterEmailChanged(email: _emailController.text));
-  // }
-
-  // void _onPasswordChange() {
-  //   _registerBloc!
-  //       .add(RegisterPasswordChanged(password: _passwordController.text));
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    // _emailController.addListener(_onEmailChange);
-    // _passwordController.addListener(_onPasswordChange);
-    _authBloc = BlocProvider.of<AppBloc>(context);
-    _registerBloc = BlocProvider.of<RegisterBloc>(context);
-  }
-
   @override
   void dispose() {
-    // _emailController.dispose();
-    // _passwordController.dispose();
-    _authBloc!.close();
-    _registerBloc!.close();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -59,12 +35,9 @@ class _SignUpFormState extends MSState<SignUpForm> {
             if (state.status.isSubmissionFailure) {
               ViewUtils.showSnack(
                 context,
-                title: ms.fmt(context, 'error.${state.errMSG!.code}'),
+                title: ms.fmt(context, 'error.${state.error}'),
                 color: snackErrorColor,
               );
-            }
-            if (state.status.isSubmissionSuccess) {
-              _authBloc?.add(AuthLogoutRequested());
             }
           },
           child: SingleChildScrollView(
@@ -122,17 +95,18 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
           margin: const EdgeInsets.only(bottom: 10),
           decoration: ViewUtils.formDecoration(),
           child: BlocBuilder<RegisterBloc, RegisterState>(
-            buildWhen: (previous, current) => previous.status != current.status,
+            buildWhen: (previous, current) => previous.email != current.email,
             builder: (context, state) {
               return TextFormField(
-                onChanged: (email) => context
-                    .read<RegisterBloc>()
-                    .add(RegisterEmailChanged(email: email)),
+                key: const Key('registerForm_usernameInput_textField'),
                 textInputAction: TextInputAction.next,
                 controller: widget.emailController,
                 decoration: ViewUtils.nonBorderDecoration(
                   hint: ms.fmt(context, 'account.email'),
                 ),
+                onChanged: (email) => context
+                    .read<RegisterBloc>()
+                    .add(RegisterEmailChanged(email)),
                 style: TextStyle(color: blackAccent),
                 keyboardType: TextInputType.emailAddress,
               );
@@ -147,16 +121,17 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
           decoration: ViewUtils.formDecoration(),
           child: BlocBuilder<RegisterBloc, RegisterState>(
               buildWhen: (previous, current) =>
-                  previous.status != current.status,
+                  previous.password != current.password,
               builder: (context, state) {
                 return TextFormField(
-                  onChanged: (password) => context
-                      .read<RegisterBloc>()
-                      .add(RegisterPasswordChanged(password: password)),
+                  key: const Key('registerForm_passwordInput_textField'),
                   controller: widget.passwordController,
                   decoration: ViewUtils.nonBorderDecoration(
                     hint: ms.fmt(context, 'account.password'),
                   ),
+                  onChanged: (password) => context
+                      .read<RegisterBloc>()
+                      .add(RegisterPasswordChanged(password)),
                   style: TextStyle(color: blackAccent),
                   keyboardType: TextInputType.text,
                 );
@@ -166,25 +141,15 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
         AnimePressButton(
           borderRadius: BorderRadius.circular(100),
           onTap: () async {
-            context.read<RegisterBloc>().add(
-                  RegisterSubmitted(
-                    email: widget.emailController.text.trim(),
-                    password: widget.passwordController.text.trim(),
-                  ),
-                );
+            context.read<RegisterBloc>().add(const RegisterSubmitted());
           },
           title: BlocBuilder<RegisterBloc, RegisterState>(
-            builder: (context, state) {
-              if (state.status.isSubmissionInProgress) {
-                return SpinKitCircle(color: spinkitColor);
-              } else {
-                return Text(
-                  ms.fmt(context, 'auth.signUp'),
-                  style: TextStyle(color: spinkitColor, fontSize: 18),
-                );
-              }
-            },
-          ),
+              builder: (context, state) {
+            final registerStyle = TextStyle(color: spinkitColor, fontSize: 18);
+            return state.status.isSubmissionInProgress
+                ? SpinKitCircle(color: spinkitColor)
+                : Text(ms.fmt(context, 'auth.signUp'), style: registerStyle);
+          }),
           titleColor: spinkitColor,
           width: size(context).width * .9,
         )

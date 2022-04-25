@@ -1,23 +1,13 @@
 import 'package:formz/formz.dart';
 
-enum EmailValidationError {
-  /// Generic invalid error.
-  invalid
-}
+enum UsernameValidationError { empty }
 
-class Email extends FormzInput<String, EmailValidationError> {
+class Email extends FormzInput<String, UsernameValidationError> {
   const Email.pure() : super.pure('');
-
-  const Email.dirty([String value = '']) : super.dirty('');
-
-  static final RegExp _emailRegExp = RegExp(
-    r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
-  );
+  const Email.dirty([String value = '']) : super.dirty(value);
 
   @override
-  EmailValidationError? validator(String? value) {
-    return _emailRegExp.hasMatch(value ?? '')
-        ? null
-        : EmailValidationError.invalid;
+  UsernameValidationError? validator(String? value) {
+    return value?.isNotEmpty == true ? null : UsernameValidationError.empty;
   }
 }

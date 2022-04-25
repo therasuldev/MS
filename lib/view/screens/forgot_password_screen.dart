@@ -2,7 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import 'package:ms/core/auth/login_bloc/login_bloc.dart';
+import 'package:ms/core/auth/login/login_bloc.dart';
 import '../ui/animation_button.dart';
 import '../widgets/widget.dart';
 
