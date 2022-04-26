@@ -19,6 +19,7 @@ class LoginForm extends MSStatefulWidget {
 class _LoginFormState extends MSState<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final loginTitleStyle = TextStyle(color: darkBlueColor, fontSize: 45);
 
   @override
   void dispose() {
@@ -46,11 +47,8 @@ class _LoginFormState extends MSState<LoginForm> {
             Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: size(context).width * .025),
-                  child: Text(
-                    ms.fmt(context, 'auth.signIn'),
-                    style: TextStyle(color: darkBlueColor, fontSize: 45),
-                  ),
+                  padding: defaultPadding(context),
+                  child: _loginTitle(context),
                 ),
                 Expanded(child: Container())
               ],
@@ -63,6 +61,13 @@ class _LoginFormState extends MSState<LoginForm> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _loginTitle(BuildContext context) {
+    return Text(
+      ms.fmt(context, 'auth.signIn'),
+      style: loginTitleStyle,
     );
   }
 }
@@ -84,13 +89,13 @@ class KLoginForm extends MSStatelessWidget {
           width: size(context).width * .9,
           height: 50,
           padding: const EdgeInsets.only(left: 7),
-          margin: const EdgeInsets.only(bottom: 10),
+          margin: const EdgeInsets.only(bottom: 15),
           decoration: ViewUtils.formDecoration(),
           child: BlocBuilder<LoginBloc, LoginState>(
               buildWhen: (previous, current) => previous.email != current.email,
               builder: (context, state) {
                 return TextFormField(
-                  key: const Key('loginForm_emailInput_textField'),
+                  key: const Key('email.field'),
                   textInputAction: TextInputAction.next,
                   controller: emailController,
                   decoration: ViewUtils.nonBorderDecoration(
@@ -107,14 +112,13 @@ class KLoginForm extends MSStatelessWidget {
           width: size(context).width * .9,
           height: 50,
           padding: const EdgeInsets.only(left: 7),
-          margin: const EdgeInsets.only(top: 10),
           decoration: ViewUtils.formDecoration(),
           child: BlocBuilder<LoginBloc, LoginState>(
               buildWhen: (previous, current) =>
                   previous.password != current.password,
               builder: (context, state) {
                 return TextFormField(
-                  key: const Key('loginForm_passwordInput_textField'),
+                  key: const Key('password.field'),
                   controller: passwordController,
                   decoration: ViewUtils.nonBorderDecoration(
                       hint: ms.fmt(context, 'account.password')),
@@ -127,36 +131,42 @@ class KLoginForm extends MSStatelessWidget {
                 );
               }),
         ),
+        //!----------[FORGOT PASSWORD TEXT BUTTON]----------------
         TextButton(
           child: Text(
             ms.fmt(context, 'auth.forgotPassword'),
             style: TextStyle(color: darkBlueColor, fontSize: 15),
           ),
           onPressed: () => pageRoute(
-            route: const ForgotPasswordPage(),
+            route: ForgotPasswordPage(),
             context: context,
             back: true,
           ),
         ),
+        //!----------[LOGIN BUTTON]------------------
         const SizedBox(height: 30),
-        AnimePressButton(
-          borderRadius: BorderRadius.circular(100),
-          onTap: () async {
-            context.read<LoginBloc>().add(const LoginSubmitted());
-          },
-          title: BlocBuilder<LoginBloc, LoginState>(
-            buildWhen: (previous, current) => previous.status != current.status,
-            builder: (context, state) {
-              final loginStyle = TextStyle(color: spinkitColor, fontSize: 18);
-              return state.status.isSubmissionInProgress
-                  ? SpinKitCircle(color: spinkitColor)
-                  : Text(ms.fmt(context, 'auth.signIn'), style: loginStyle);
-            },
-          ),
-          titleColor: spinkitColor,
-          width: size(context).width * .9,
-        )
+        _loginBUTTON(context)
       ],
+    );
+  }
+
+  Widget _loginBUTTON(BuildContext context) {
+    return AnimePressButton(
+      borderRadius: BorderRadius.circular(100),
+      onTap: () async {
+        context.read<LoginBloc>().add(const LoginSubmitted());
+      },
+      title: BlocBuilder<LoginBloc, LoginState>(
+        buildWhen: (previous, current) => previous.status != current.status,
+        builder: (context, state) {
+          final loginStyle = TextStyle(color: spinkitColor, fontSize: 18);
+          return state.status.isSubmissionInProgress
+              ? SpinKitCircle(color: spinkitColor)
+              : Text(ms.fmt(context, 'auth.signIn'), style: loginStyle);
+        },
+      ),
+      titleColor: spinkitColor,
+      width: size(context).width * .9,
     );
   }
 }

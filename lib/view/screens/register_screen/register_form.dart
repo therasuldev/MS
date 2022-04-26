@@ -17,6 +17,7 @@ class RegisterForm extends MSStatefulWidget {
 class _RegisterFormState extends MSState<RegisterForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final registerTitleStyle = TextStyle(color: darkBlueColor, fontSize: 35);
 
   @override
   void dispose() {
@@ -47,12 +48,8 @@ class _RegisterFormState extends MSState<RegisterForm> {
                 Row(
                   children: [
                     Padding(
-                      padding:
-                          EdgeInsets.only(left: size(context).width * .025),
-                      child: Text(
-                        ms.fmt(context, 'auth.signUp'),
-                        style: TextStyle(color: darkBlueColor, fontSize: 35),
-                      ),
+                      padding: defaultPadding(context),
+                      child: _registerTitle(context),
                     ),
                     Expanded(child: Container()),
                   ],
@@ -67,6 +64,13 @@ class _RegisterFormState extends MSState<RegisterForm> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _registerTitle(BuildContext context) {
+    return Text(
+      ms.fmt(context, 'auth.signUp'),
+      style: registerTitleStyle,
     );
   }
 }
@@ -99,7 +103,7 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
             buildWhen: (previous, current) => previous.email != current.email,
             builder: (context, state) {
               return TextFormField(
-                key: const Key('registerForm_usernameInput_textField'),
+                key: const Key('email.field'),
                 textInputAction: TextInputAction.next,
                 controller: widget.emailController,
                 decoration: ViewUtils.nonBorderDecoration(
@@ -125,7 +129,7 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
                   previous.password != current.password,
               builder: (context, state) {
                 return TextFormField(
-                  key: const Key('registerForm_passwordInput_textField'),
+                  key: const Key('password.field'),
                   controller: widget.passwordController,
                   decoration: ViewUtils.nonBorderDecoration(
                     hint: ms.fmt(context, 'account.password'),
@@ -139,22 +143,27 @@ class _KRegisterFormState extends MSState<KRegisterForm> {
               }),
         ),
         const SizedBox(height: 30),
-        AnimePressButton(
-          borderRadius: BorderRadius.circular(100),
-          onTap: () async {
-            context.read<RegisterBloc>().add(const RegisterSubmitted());
-          },
-          title: BlocBuilder<RegisterBloc, RegisterState>(
-              builder: (context, state) {
-            final registerStyle = TextStyle(color: spinkitColor, fontSize: 18);
-            return state.status.isSubmissionInProgress
-                ? SpinKitCircle(color: spinkitColor)
-                : Text(ms.fmt(context, 'auth.signUp'), style: registerStyle);
-          }),
-          titleColor: spinkitColor,
-          width: size(context).width * .9,
-        )
+        //!---------------[REGISTER BUTTON]----------------
+        _registerBUTTON(context)
       ],
+    );
+  }
+
+  AnimePressButton _registerBUTTON(BuildContext context) {
+    return AnimePressButton(
+      borderRadius: BorderRadius.circular(100),
+      onTap: () async {
+        context.read<RegisterBloc>().add(const RegisterSubmitted());
+      },
+      title:
+          BlocBuilder<RegisterBloc, RegisterState>(builder: (context, state) {
+        final registerStyle = TextStyle(color: spinkitColor, fontSize: 18);
+        return state.status.isSubmissionInProgress
+            ? SpinKitCircle(color: spinkitColor)
+            : Text(ms.fmt(context, 'auth.signUp'), style: registerStyle);
+      }),
+      titleColor: spinkitColor,
+      width: size(context).width * .9,
     );
   }
 }

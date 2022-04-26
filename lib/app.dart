@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ms/core/auth/auth_bloc/auth_bloc.dart';
 import 'package:ms/core/service/authentication_repository.dart';
 import 'package:ms/view/home/home.dart';
+import 'package:ms/view/home/splash_page.dart';
 import 'package:ms/view/start/splash.dart';
 
 import 'core/app/intl.dart';
@@ -19,7 +20,7 @@ class MyApp extends MSStatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
         value: authenticationRepository,
-        child: BlocProvider(
+        child: BlocProvider<AuthenticationBloc>(
           create: (_) => AuthenticationBloc(
               authenticationRepository: authenticationRepository),
           child: AppView(),
@@ -68,7 +69,7 @@ class _AppViewState extends MSState<AppView> {
           child: child,
         );
       },
-      onGenerateRoute: (_) => ScreenPage.route(),
+      onGenerateRoute: (_) => SplashScreen.route(),
       localizationsDelegates: [
         ms.intl.delegate,
         GlobalMaterialLocalizations.delegate,

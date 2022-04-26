@@ -17,6 +17,8 @@ class ForgotPasswordForm extends MSStatefulWidget {
 
 class _ForgotPasswordFormState extends MSState<ForgotPasswordForm> {
   final _emailController = TextEditingController();
+  final forgotPasswordTitleStyle =
+      TextStyle(fontSize: 35, color: darkBlueColor);
   @override
   Widget build(BuildContext context) {
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
@@ -42,11 +44,8 @@ class _ForgotPasswordFormState extends MSState<ForgotPasswordForm> {
           Row(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: size(context).width * .025),
-                child: Text(
-                  ms.fmt(context, 'auth.sendPasswordResetMail'),
-                  style: TextStyle(fontSize: 35, color: darkBlueColor),
-                ),
+                padding: defaultPadding(context),
+                child: _forgotPasswordTitle(context),
               ),
               Expanded(child: Container()),
             ],
@@ -56,7 +55,6 @@ class _ForgotPasswordFormState extends MSState<ForgotPasswordForm> {
             width: size(context).width * .9,
             height: 50,
             padding: const EdgeInsets.only(left: 7),
-            margin: const EdgeInsets.only(bottom: 10),
             decoration: ViewUtils.formDecoration(),
             child: BlocBuilder<ForgotPasswordBloc, ForgotPasswordState>(
                 buildWhen: (previous, current) =>
@@ -64,7 +62,7 @@ class _ForgotPasswordFormState extends MSState<ForgotPasswordForm> {
                 builder: (context, state) {
                   return TextFormField(
                     controller: _emailController,
-                    key: const Key('forgotPasswordForm_emailInput_textField'),
+                    key: const Key('forgot.password.field'),
                     textInputAction: TextInputAction.done,
                     decoration: ViewUtils.nonBorderDecoration(
                       hint: ms.fmt(context, 'account.email'),
@@ -77,10 +75,18 @@ class _ForgotPasswordFormState extends MSState<ForgotPasswordForm> {
                   );
                 }),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
+          //!-----------------[SEND PASSWORD RESET EMAIL]-------------------
           _sendResetEmailButton(context)
         ],
       ),
+    );
+  }
+
+  Widget _forgotPasswordTitle(BuildContext context) {
+    return Text(
+      ms.fmt(context, 'auth.sendPasswordResetMail'),
+      style: forgotPasswordTitleStyle,
     );
   }
 

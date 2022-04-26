@@ -52,7 +52,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: const LoginPage(),
+                route:  LoginPage(),
                 back: true,
               ),
               title: Text(ms.fmt(context, 'auth.signIn'), style: style),
@@ -64,7 +64,7 @@ class _ScreenPageState extends MSState<ScreenPage> {
               borderRadius: BorderRadius.circular(100),
               onTap: () => pageRoute(
                 context: context,
-                route: const RegisterPage(),
+                route:  RegisterPage(),
                 back: true,
               ),
               title: Text(ms.fmt(context, 'auth.signUp'), style: style),
