@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:ms/core/auth/login/login_bloc.dart';
-import 'package:ms/view/screens/forgot_password_screen.dart';
+import 'package:ms/view/screens/forgot_password/forgot_password_page.dart';
 
 import 'package:ms/view/widgets/utils.dart';
 import '../../../mystore.dart';
@@ -35,7 +35,7 @@ class _LoginFormState extends MSState<LoginForm> {
           ViewUtils.showSnack(
             context,
             color: snackErrorColor,
-            title: ms.fmt(context, 'error.${state.error}'),
+            msg: ms.fmt(context, 'error.${state.error}'),
           );
         }
       },
@@ -46,7 +46,7 @@ class _LoginFormState extends MSState<LoginForm> {
             Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: size(context).width * .05),
+                  padding: EdgeInsets.only(left: size(context).width * .025),
                   child: Text(
                     ms.fmt(context, 'auth.signIn'),
                     style: TextStyle(color: darkBlueColor, fontSize: 45),
@@ -133,7 +133,7 @@ class KLoginForm extends MSStatelessWidget {
             style: TextStyle(color: darkBlueColor, fontSize: 15),
           ),
           onPressed: () => pageRoute(
-            route: ForgotPasswordPage(),
+            route: const ForgotPasswordPage(),
             context: context,
             back: true,
           ),

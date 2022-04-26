@@ -25,13 +25,13 @@ class ViewUtils {
   // showSnack shows easy-modifiable snack bar.
   static showSnack(
     BuildContext context, {
-    required String title,
+    required String msg,
     bool isFloating = false,
     required Color color,
     int sec = 4,
   }) async {
     final snack = SnackBar(
-      content: Text(title, style: const TextStyle(color: Colors.white)),
+      content: Text(msg, style: const TextStyle(color: Colors.white)),
       duration: Duration(seconds: sec),
       margin: isFloating ? const EdgeInsets.all(8) : null,
       behavior: isFloating ? SnackBarBehavior.floating : SnackBarBehavior.fixed,

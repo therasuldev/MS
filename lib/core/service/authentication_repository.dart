@@ -44,22 +44,16 @@ class AuthenticationRepository {
   }
 
   Future<bool> isSignedIn() async {
-    final currentUser = await _firebaseAuth.currentUser;
+    final currentUser = _firebaseAuth.currentUser;
     return currentUser != null;
   }
 
   Future<String?> getUser() async {
-    return (await _firebaseAuth.currentUser)!.email;
+    return (_firebaseAuth.currentUser)!.email;
   }
 
-  Future<void> sendEmailVerification() async {
-    var user = await _firebaseAuth.currentUser;
-    user!.sendEmailVerification();
-  }
-
-  Future<bool> isEmailVerified() async {
-    var user = await _firebaseAuth.currentUser;
-    return user!.emailVerified;
+  Future sendPasswordResetEmail({required String email}) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }
 

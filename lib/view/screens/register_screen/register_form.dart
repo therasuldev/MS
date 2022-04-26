@@ -35,22 +35,23 @@ class _RegisterFormState extends MSState<RegisterForm> {
             if (state.status.isSubmissionFailure) {
               ViewUtils.showSnack(
                 context,
-                title: ms.fmt(context, 'error.${state.error}'),
                 color: snackErrorColor,
+                msg: ms.fmt(context, 'error.${state.error}'),
               );
             }
           },
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(left: size(context).width * .05),
+                      padding:
+                          EdgeInsets.only(left: size(context).width * .025),
                       child: Text(
                         ms.fmt(context, 'auth.signUp'),
-                        style: TextStyle(color: darkBlueColor, fontSize: 33),
+                        style: TextStyle(color: darkBlueColor, fontSize: 35),
                       ),
                     ),
                     Expanded(child: Container()),
