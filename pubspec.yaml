@@ -38,9 +38,7 @@ dependencies:
   equatable: ^2.0.3
   firebase_auth: ^3.3.14
   flutter_spinkit: ^5.1.0
-  flow_builder: ^0.0.6
   water_drop_nav_bar: ^2.1.0+8
-  another_flushbar: ^1.10.28
   google_sign_in: ^5.3.0
   dio: ^4.0.6
   logger: ^1.1.0
@@ -48,6 +46,8 @@ dependencies:
   flutter_bloc: ^8.0.1
   firebase_core: ^1.15.0
   formz: ^0.4.1
+  delayed_display: ^2.0.0
+  shimmer: ^2.0.0
 
 
 dev_dependencies:
