@@ -53,7 +53,7 @@ class _AppViewState extends MSState<AppView> {
             switch (state.status) {
               case AuthenticationStatus.authenticated:
                 _navigator.pushAndRemoveUntil<void>(
-                  HomePage.route(),
+                  Home.route(),
                   (route) => false,
                 );
                 break;
