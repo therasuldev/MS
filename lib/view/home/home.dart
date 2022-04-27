@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ms/core/auth/auth_bloc/auth_bloc.dart';
+import 'package:ms/view/home/components/home_page.dart';
+import 'package:ms/view/home/components/profile_page.dart';
 import 'package:ms/view/widgets/widget.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 import '../../mystore.dart';
 
-class HomePage extends MSStatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+class Home extends MSStatefulWidget {
+  Home({Key? key}) : super(key: key);
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
+    return MaterialPageRoute<void>(builder: (_) => Home());
   }
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends MSState<HomePage> {
+class _HomePageState extends MSState<Home> {
   var initialIndex = 0;
-  var pageController = PageController();
+  final pageController = PageController(initialPage: 0);
+  final _pages = [HomePage(), Profile()];
+
+  void pageChanged(int index) => setState(() => initialIndex = index);
+
   @override
   void initState() {
     super.initState();
-    pageController.addListener(() {
-      setState(() {
-        initialIndex = pageController.page!.toInt();
-      });
-    });
   }
 
   @override
@@ -40,40 +39,35 @@ class _HomePageState extends MSState<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Onlayn Magaza'),
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        elevation: 0,
-        actions: [
-          TextButton(
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              context
-                  .read<AuthenticationBloc>()
-                  .add(AuthenticationLogoutRequested());
-            },
-          ),
-        ],
+      appBar: initialIndex == 0 ? _appBar() : null,
+      body: PageView(
+        onPageChanged: (value) => pageChanged(value),
+        children: [_pages.elementAt(initialIndex)],
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: const [
-            Text('1'),
-            Text('1'),
-            Text('1'),
-            Text('1'),
-            Text('1'),
-          ],
-        ),
-      ),
+      drawer: const Drawer(),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _floatingActionButton(),
       bottomNavigationBar: _bottomNavigationBar(),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.light,
+      elevation: 0,
+      actions: [
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.favorite),
+          color: Colors.red,
+        ),
+        const CircleAvatar(
+          radius: 15,
+          backgroundImage: AssetImage('assets/img/splash.png'),
+        ),
+        const Padding(padding: EdgeInsets.only(right: 10))
+      ],
     );
   }
 
@@ -88,9 +82,7 @@ class _HomePageState extends MSState<HomePage> {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: WaterDropNavBar(
-        onItemSelected: (int index) {
-          setState(() => initialIndex = index);
-        },
+        onItemSelected: (int index) => pageChanged(index),
         barItems: <BarItem>[
           BarItem(
             filledIcon: Icons.home,
