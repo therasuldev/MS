@@ -17,7 +17,7 @@ class ViewUtils {
 
   static formDecoration() {
     return BoxDecoration(
-      color: const Color.fromARGB(255, 222, 237, 245),
+      color: const Color.fromARGB(255, 232, 246, 253),
       borderRadius: BorderRadius.circular(15),
     );
   }
